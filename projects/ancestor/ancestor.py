@@ -13,7 +13,7 @@ def earliest_ancestor(ancestors, starting_node):
     
     for (parent, child) in ancestors:
         # Add edges
-        ancestor_tree.add_edge(parent, child)
+        ancestor_tree.add_edge(child, parent)
     # print("neighbors", ancestor_tree.get_neighbors(5))
     # print("ancestor tree", ancestor_tree.vertices)
 
@@ -22,14 +22,51 @@ def earliest_ancestor(ancestors, starting_node):
     for i in ancestor_tree.vertices:
         # print("i", i)  # Print vertices
         # Call dfs function from Graph class
-        dfs_list = ancestor_tree.dfs(i, starting_node)  # i is each vertex/node in graph
+        path = ancestor_tree.dfs(i, starting_node)  # i is each vertex/node in graph
         # print("ancestor dfs", ancestor_tree.dfs(starting_node, i))
-        if dfs_list:  # If there are items in list
-            if len(dfs_list) > longest_path:  # If list length is greater than longest path
-                longest_path = len(dfs_list)  # Set longest path equal to list length
+        print('path', path)
+        if path:  # If there are items in list
+            if len(path) > longest_path:  # If list length is greater than longest path
+                longest_path = len(path)  # Set longest path equal to list length
                 earliest_ancestor = i  # Set earliest_ancestor equal to current node/vertex
-        
+        elif not path and longest_path == 1:  # If path is 'None' and 'longest_path' is our default of 1   
+            earliest_ancestor = -1
+                
     print("earliest ancestor", earliest_ancestor)
     return earliest_ancestor
 
-# print('earliest ancestor', earliest_ancestor(ancestors_data, 8))
+print('earliest ancestor', earliest_ancestor(ancestors_data, 8))
+
+'''
+BFS Solution:
+def earliest_ancestor(ancestors, starting_node):
+    # Build graph
+    graph = Graph()
+    for pair in ancestors:
+        graph.add_vertex(pair[0])
+        graph.add_vertex(pair[1])
+        # Build edges in reverse
+        graph.add_edge(pair[1], pair[0])
+    
+    # Do a BFT (storing the path)
+    q = Queue()
+    q.enqueue([starting_node])
+    max_path_len = 1
+    earliest_ancestor = -1
+    while q.size() > 0:
+        path = q.dequeue()
+        v = path[-1]
+
+        # If the path is longer or equal and the value is smaller, or if the path is longer
+        if (len(path) >= max_path_len and v < earliest_ancestor) or (len(path) > max_path_len):
+            earliest_ancestor = v
+            max_path_len = len(path)
+
+        for neighbor in graph.vertices[v]:
+            path_copy = list(path)
+            path_copy.append(neighbor)
+            q.enqueue(path_copy)
+
+    return earliest_ancestor
+
+'''
